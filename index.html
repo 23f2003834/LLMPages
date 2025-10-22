@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GitHub Pages Files</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUa5m4b77RtOt0akVxLJEgoe3lUilujhRkflGT045A3rKPxUP3+5dL5U5kT1" crossorigin="anonymous" />
+<style>
+body {
+  padding: 2rem;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Project Files Overview</h1>
+<p>This site links to various files including texts, JSON data, an SVG image, and license information.</p>
+<ul class="list-group">
+<li class="list-group-item"><a href="ashravan.txt" target="_blank">ashravan.txt</a> - Short story about Ashravan after Shai restores him.</li>
+<li class="list-group-item"><a href="dilemma.json" target="_blank">dilemma.json</a> - Autonomous vehicle dilemma data.</li>
+<li class="list-group-item"><a href="about.md" target="_blank">about.md</a> - Description of the creator in three words.</li>
+<li class="list-group-item"><a href="pelican.svg" target="_blank">pelican.svg</a> - SVG of a pelican riding a bicycle.</li>
+<li class="list-group-item"><a href="restaurant.json" target="_blank">restaurant.json</a> - Restaurant recommendation in Delhi.</li>
+<li class="list-group-item"><a href="prediction.json" target="_blank">prediction.json</a> - Fed Funds rate forecast for December 2025.</li>
+<li class="list-group-item"><a href="uid.txt" target="_blank">uid.txt</a> - Unique identifier file.</li>
+<li class="list-group-item"><a href="LICENSE" target="_blank">LICENSE</a> - MIT License</li>
+</ul>
+</div>
+<h2 class="mt-4">Loading JSON Data</h2>
+<div id="json-data" class="mt-2"></div>
+<script>
+// Fallback CSS if Bootstrap fails
+try {
+  if (!window.bootstrap) {
+    document.head.insertAdjacentHTML('beforeend', '<style>body { font-family: Arial, sans-serif; padding: 2rem; }</style>');
+  }
+} catch(e) {
+  document.head.insertAdjacentHTML('beforeend', '<style>body { font-family: Arial, sans-serif; padding: 2rem; }</style>');
+}
+
+// Load and process files
+const files = {
+  ashravan: 'ashravan.txt',
+  dilemma: 'dilemma.json',
+  about: 'about.md',
+  pelican: 'pelican.svg',
+  restaurant: 'restaurant.json',
+  prediction: 'prediction.json',
+  uid: 'uid.txt',
+  license: 'LICENSE'
+};
+
+// Utility to fetch text files
+function fetchText(file) {
+  return fetch(file).then(res => res.text());
+}
+// Utility to fetch JSON files
+function fetchJSON(file) {
+  return fetch(file).then(res => res.json());
+}
+
+Promise.all([
+  fetchText(files.ashravan),
+  fetchJSON(files.dilemma),
+  fetchText(files.about),
+  fetchText(files.pelican),
+  fetchJSON(files.restaurant),
+  fetchJSON(files.prediction),
+  fetchText(files.uid),
+  fetchText(files.license)
+]).then(([ashravanText, dilemmaData, aboutText, pelicanSVG, restaurantData, predictionData, uidText, licenseText]) => {
+  // Validate uid
+  const expectedUid = '102750015687540591283358597813645050549393545488123118298654516392909279406171';
+  if (uidText.trim() !== expectedUid) {
+    alert('UID does not match expected value.');
+  }
+
+  // Display JSON data
+  const jsonDiv = document.getElementById('json-data');
+  jsonDiv.innerHTML = `
+<h3>Dilemma JSON</h3>
+<pre>${JSON.stringify(dilemmaData, null, 2)}</pre>
+<h3>Restaurant JSON</h3>
+<pre>${JSON.stringify(restaurantData, null, 2)}</pre>
+<h3>Prediction JSON</h3>
+<pre>${JSON.stringify(predictionData, null, 2)}</pre>
+`;
+
+  // Insert the other content into the page
+  const container = document.querySelector('.container');
+
+  // Ashravan story
+  const storySection = document.createElement('div');
+  storySection.innerHTML = `
+<h2>Short Story: Ashravan's Revival</h2>
+<p>${ashravanText}</p>
+`;
+  container.appendChild(storySection);
+
+  // About in three words
+  const aboutSection = document.createElement('div');
+  aboutSection.innerHTML = `
+<h2>About Me</h2>
+<p>Three words: ${aboutText.trim()}</p>
+`;
+  container.appendChild(aboutSection);
+
+  // Pelican SVG
+  const svgContainer = document.createElement('div');
+  svgContainer.innerHTML = `
+<h2>Pelican Riding a Bicycle</h2>
+${pelicanSVG}
+`;
+  container.appendChild(svgContainer);
+
+  // Restaurant info
+  const restSection = document.createElement('div');
+  restSection.innerHTML = `
+<h2>Recommended Restaurant in Delhi</h2>
+<p>Name: ${restaurantData.name}</p>
+<p>Location: (${restaurantData.lat}, ${restaurantData.long})</p>
+<p>What to Eat: ${restaurantData.what_to_eat}</p>
+`;
+  container.appendChild(restSection);
+
+  // Prediction info
+  const predSection = document.createElement('div');
+  predSection.innerHTML = `
+<h2>Forecast for Fed Funds Rate (Dec 2025)</h2>
+<p>Projected Rate: ${(predictionData.rate * 100).toFixed(2)}%</p>
+<p>Reason: ${predictionData.reason}</p>
+`;
+  container.appendChild(predSection);
+
+}).catch(error => {
+  console.error('Error loading files:', error);
+});
+</script>
+</body>
+</html>
